@@ -246,12 +246,13 @@ var gFormat = createFormat({prefix:"G", decimals:1});
 var mFormat = createFormat({prefix:"M", decimals:1});
 
 var spatialFormat = createFormat({decimals:(unit == MM ? 3 : 4), forceDecimal:true});
+var diametermode = (getProperty("diametermode")) ;
+var xFormat = createFormat({decimals:(unit == MM ? 3 : 4), forceDecimal:true, scale:1}); // diameter mode
+//else
+//var xFormat = createFormat({decimals:(unit == MM ? 3 : 4), forceDecimal:true, scale:1}); // radius mode
 
-if (getProperty("diametermode")) {
-	var xFormat = createFormat({decimals:(unit == MM ? 3 : 4), forceDecimal:true, scale:2}); // diameter mode
-}else{
-	var xFormat = createFormat({decimals:(unit == MM ? 3 : 4), forceDecimal:true, scale:1}); // radius mode
-}
+
+
 	
 var yFormat = createFormat({decimals:(unit == MM ? 3 : 4), forceDecimal:true});
 var zFormat = createFormat({decimals:(unit == MM ? 3 : 4), forceDecimal:true});
@@ -499,6 +500,11 @@ function onOpen() {
   if (getProperty("useRadius")) {
     maximumCircularSweep = toRad(90); // avoid potential center calculation errors for CNC
   }
+  if (getProperty("diametermode")) {
+	writeComment("  Mode : Diameter ");
+  xFormat.setScale(2) ;}
+  else
+	  writeComment("  Mode : Radius ");
 
   yOutput.disable();
 
@@ -1600,7 +1606,6 @@ function onClose() {
   onImpliedCommand(COMMAND_END);
   onImpliedCommand(COMMAND_STOP_SPINDLE);
   writeBlock(mFormat.format(30)); // stop program, spindle stop, coolant off
-  writeln("%");
 }
 
 function setProperty(property, value) {
